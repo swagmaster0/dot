@@ -1,9 +1,9 @@
-short_name = "godot"
-name = "Godot Engine"
+short_name = "gadat"
+name = "Gadat Engine (custom build by swag-master0)"
 major = 4
 minor = 4
-patch = 0
+patch = 69
 status = "dev"
 module_config = ""
-website = "https://godotengine.org"
+website = "https://swag-master0.github.io"
 docs = "latest"
