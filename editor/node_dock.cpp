@@ -37,6 +37,8 @@
 void NodeDock::show_groups() {
 	groups_button->set_pressed(true);
 	connections_button->set_pressed(false);
+	new_button->set_pressed(false);
+
 	groups->show();
 	connections->hide();
 }
@@ -44,9 +46,21 @@ void NodeDock::show_groups() {
 void NodeDock::show_connections() {
 	groups_button->set_pressed(false);
 	connections_button->set_pressed(true);
+	new_button->set_pressed(false);
+
 	groups->hide();
 	connections->show();
 }
+
+void NodeDock::show_newtab() {
+	groups_button->set_pressed(false);
+	connections_button->set_pressed(false);
+	new_button->set_pressed(true);
+
+	groups->hide();
+	connections->hide();
+}
+
 
 void NodeDock::_notification(int p_what) {
 	switch (p_what) {
@@ -54,6 +68,7 @@ void NodeDock::_notification(int p_what) {
 		case NOTIFICATION_THEME_CHANGED: {
 			connections_button->set_icon(get_editor_theme_icon(SNAME("Signals")));
 			groups_button->set_icon(get_editor_theme_icon(SNAME("Groups")));
+			new_button->set_icon(get_editor_theme_icon(SNAME("Signals")));
 		} break;
 	}
 }
@@ -112,6 +127,17 @@ NodeDock::NodeDock() {
 	groups_button->set_clip_text(true);
 	mode_hb->add_child(groups_button);
 	groups_button->connect(SceneStringName(pressed), callable_mp(this, &NodeDock::show_groups));
+
+	new_button = memnew(Button);
+	new_button->set_theme_type_variation("FlatButton");
+	new_button->set_text(TTR("New Tab"));
+	new_button->set_toggle_mode(true);
+	new_button->set_pressed(false);
+	new_button->set_h_size_flags(SIZE_EXPAND_FILL);
+	new_button->set_clip_text(true);
+	mode_hb->add_child(new_button);
+	new_button->connect(SceneStringName(pressed), callable_mp(this, &NodeDock::show_newtab));
+
 
 	connections = memnew(ConnectionsDock);
 	add_child(connections);
