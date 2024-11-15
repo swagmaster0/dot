@@ -3757,6 +3757,15 @@ int RenderingDevice::screen_get_height(DisplayServer::WindowID p_screen) const {
 	return context->surface_get_height(surface);
 }
 
+int RenderingDevice::screen_get_pre_rotation_degrees(DisplayServer::WindowID p_screen) const {
+	_THREAD_SAFE_METHOD_
+
+	HashMap<DisplayServer::WindowID, RDD::SwapChainID>::ConstIterator it = screen_swap_chains.find(p_screen);
+	ERR_FAIL_COND_V_MSG(it == screen_swap_chains.end(), ERR_CANT_CREATE, "A swap chain was not created for the screen.");
+
+	return driver->swap_chain_get_pre_rotation_degrees(it->value);
+}
+
 RenderingDevice::FramebufferFormatID RenderingDevice::screen_get_framebuffer_format(DisplayServer::WindowID p_screen) const {
 	_THREAD_SAFE_METHOD_
 
@@ -5263,14 +5272,13 @@ void RenderingDevice::_wait_for_transfer_worker(TransferWorker *p_transfer_worke
 		p_transfer_worker->operations_processed = p_transfer_worker->operations_submitted;
 	}
 
-	if (!p_transfer_worker->texture_barriers.is_empty()) {
-		MutexLock transfer_worker_lock(transfer_worker_pool_mutex);
-		_flush_barriers_for_transfer_worker(p_transfer_worker);
-	}
+	_flush_barriers_for_transfer_worker(p_transfer_worker);
 }
 
 void RenderingDevice::_flush_barriers_for_transfer_worker(TransferWorker *p_transfer_worker) {
+	// Caller must have already acquired the mutex for the worker.
 	if (!p_transfer_worker->texture_barriers.is_empty()) {
+		MutexLock transfer_worker_lock(transfer_worker_pool_texture_barriers_mutex);
 		for (uint32_t i = 0; i < p_transfer_worker->texture_barriers.size(); i++) {
 			transfer_worker_pool_texture_barriers.push_back(p_transfer_worker->texture_barriers[i]);
 		}
@@ -5343,8 +5351,11 @@ void RenderingDevice::_submit_transfer_workers(RDD::CommandBufferID p_draw_comma
 			}
 		}
 	}
+}
 
-	if (p_draw_command_buffer && !transfer_worker_pool_texture_barriers.is_empty()) {
+void RenderingDevice::_submit_transfer_barriers(RDD::CommandBufferID p_draw_command_buffer) {
+	MutexLock transfer_worker_lock(transfer_worker_pool_texture_barriers_mutex);
+	if (!transfer_worker_pool_texture_barriers.is_empty()) {
 		driver->command_pipeline_barrier(p_draw_command_buffer, RDD::PIPELINE_STAGE_COPY_BIT, RDD::PIPELINE_STAGE_ALL_COMMANDS_BIT, {}, {}, transfer_worker_pool_texture_barriers);
 		transfer_worker_pool_texture_barriers.clear();
 	}
@@ -5944,6 +5955,7 @@ void RenderingDevice::_end_frame() {
 	// The command buffer must be copied into a stack variable as the driver workarounds can change the command buffer in use.
 	RDD::CommandBufferID command_buffer = frames[frame].command_buffer;
 	_submit_transfer_workers(command_buffer);
+	_submit_transfer_barriers(command_buffer);
 
 	draw_graph.end(RENDER_GRAPH_REORDER, RENDER_GRAPH_FULL_BARRIERS, command_buffer, frames[frame].command_buffer_pool);
 	driver->command_buffer_end(command_buffer);

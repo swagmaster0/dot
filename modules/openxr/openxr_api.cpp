@@ -2036,8 +2036,9 @@ bool OpenXRAPI::poll_events() {
 				if (local_floor_emulation.enabled) {
 					local_floor_emulation.should_reset_floor_height = true;
 				}
-				if (event->poseValid && xr_interface) {
-					xr_interface->on_pose_recentered();
+
+				if (xr_interface) {
+					xr_interface->on_reference_space_change_pending();
 				}
 			} break;
 			case XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED: {
@@ -2752,8 +2753,9 @@ void OpenXRAPI::parse_velocities(const XrSpaceVelocity &p_velocity, Vector3 &r_l
 }
 
 bool OpenXRAPI::xr_result(XrResult result, const char *format, Array args) const {
-	if (XR_SUCCEEDED(result))
+	if (XR_SUCCEEDED(result)) {
 		return true;
+	}
 
 	char resultString[XR_MAX_RESULT_STRING_SIZE];
 	xrResultToString(instance, result, resultString);

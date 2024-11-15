@@ -99,8 +99,13 @@ Files extracted from upstream source:
 ## certs
 
 - Upstream: Mozilla, via https://github.com/bagder/ca-bundle
-- Version: git (c5a419971b1bec220368c619aaafd0b818aa119f, 2024)
+- Version: git (4d3fe6683f651d96be1bbef316b201e9b33b274d, 2024),
+  generated from mozilla-release changeset b8ea2342548b8571e58f9176d9555ccdb5ec199f
 - License: MPL 2.0
+
+Files extracted from upstream source:
+
+- `ca-bundle.crt` renamed to `ca-certificates.crt`
 
 
 ## clipper2
@@ -551,8 +556,11 @@ File extracted from upstream release tarball:
 
 - All `.h` from `include/mbedtls/` to `thirdparty/mbedtls/include/mbedtls/`
   and all `.h` from `include/psa/` to `thirdparty/mbedtls/include/psa/`
-- All `.c` and `.h` from `library/` to `thirdparty/mbedtls/library/` except
-  for the `psa_*.c` source files
+- All `.c` and `.h` from `library/` to `thirdparty/mbedtls/library/`
+- From `library/` to `thirdparty/mbedtls/library/`:
+  - All `.c` and `.h` files
+  - Except `bignum_mod.c`, `block_cipher.c`, `ecp_curves_new.c`, `lmots.c`,
+  `lms.c`
 - The `LICENSE` file (edited to keep only the Apache 2.0 variant)
 - Applied the patch `msvc-redeclaration-bug.diff` to fix a compilation error
   with some MSVC versions
@@ -709,7 +717,7 @@ Collection of single-file libraries used in Godot components.
   * Modifications: use `const char*` instead of `char*` for input string
 - `smolv.{cpp,h}`
   * Upstream: https://github.com/aras-p/smol-v
-  * Version: git (4b52c165c13763051a18e80ffbc2ee436314ceb2, 2020)
+  * Version: git (9dd54c379ac29fa148cb1b829bb939ba7381d8f4, 2024)
   * License: Public Domain or MIT
 - `stb_rect_pack.h`
   * Upstream: https://github.com/nothings/stb
@@ -1063,7 +1071,7 @@ Files extracted from upstream source:
 
 Files extracted from upstream source:
 
-- All `.c` and `.h` files, minus `infback.c`
+- All `.c` and `.h` files, except `gz*.c` and `infback.c`
 - `LICENSE`
 
 
