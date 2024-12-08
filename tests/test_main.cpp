@@ -55,6 +55,8 @@
 #include "tests/core/io/test_resource.h"
 #include "tests/core/io/test_stream_peer.h"
 #include "tests/core/io/test_stream_peer_buffer.h"
+#include "tests/core/io/test_tcp_server.h"
+#include "tests/core/io/test_udp_server.h"
 #include "tests/core/io/test_xml_parser.h"
 #include "tests/core/math/test_aabb.h"
 #include "tests/core/math/test_astar.h"
@@ -65,6 +67,7 @@
 #include "tests/core/math/test_geometry_3d.h"
 #include "tests/core/math/test_math_funcs.h"
 #include "tests/core/math/test_plane.h"
+#include "tests/core/math/test_projection.h"
 #include "tests/core/math/test_quaternion.h"
 #include "tests/core/math/test_random_number_generator.h"
 #include "tests/core/math/test_rect2.h"
@@ -116,6 +119,7 @@
 #include "tests/scene/test_curve.h"
 #include "tests/scene/test_curve_2d.h"
 #include "tests/scene/test_curve_3d.h"
+#include "tests/scene/test_fontfile.h"
 #include "tests/scene/test_gradient.h"
 #include "tests/scene/test_gradient_texture.h"
 #include "tests/scene/test_image_texture.h"
@@ -365,6 +369,9 @@ struct GodotTestCaseListener : public doctest::IReporter {
 #ifdef TOOLS_ENABLED
 		if (EditorSettings::get_singleton()) {
 			EditorSettings::destroy();
+		}
+		if (EditorPaths::get_singleton()) {
+			EditorPaths::free();
 		}
 #endif // TOOLS_ENABLED
 
