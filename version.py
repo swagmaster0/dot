@@ -1,9 +1,9 @@
-short_name = "Godot"
+short_name = "godot"
 name = "Godot Engine"
 major = 4
 minor = 4
 patch = 0
-status = ""
+status = "dev"
 module_config = ""
-website = "https://swag-master0.github.io"
+website = "https://godotengine.org"
 docs = "latest"
